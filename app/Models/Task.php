@@ -6,5 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Task extends Model
 {
-    //
+    protected $fillable = [
+        'title',
+    ];
+
+    protected $casts = [
+        'created_at' => 'datetime',
+    ];
 }

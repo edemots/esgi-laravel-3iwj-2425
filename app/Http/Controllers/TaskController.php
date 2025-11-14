@@ -12,7 +12,12 @@ class TaskController extends Controller
      */
     public function index()
     {
-        //
+        $tasks = Task::query()
+            ->select(['id', 'title', 'created_at'])
+            ->latest()
+            ->get();
+
+        return view('task.index', compact('tasks'));
     }
 
     /**
@@ -28,7 +33,16 @@ class TaskController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request);
+        $validated = $request->validate([
+            'title' => ['min:2', 'max:100'],
+        ]);
+
+        $task = new Task($validated);
+        $task->save();
+
+        return redirect()
+            ->route('tasks.create')
+            ->with('success', 'Tâche créée avec succès.');
     }
 
     /**
@@ -44,7 +58,7 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        //
+        return view('task.edit', compact('task'));
     }
 
     /**
@@ -52,7 +66,15 @@ class TaskController extends Controller
      */
     public function update(Request $request, Task $task)
     {
-        //
+        $validated = $request->validate([
+            'title' => ['min:2', 'max:100'],
+        ]);
+
+        $task->update($validated);
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'La tâche a été mise à jour avec succès.');
     }
 
     /**
@@ -60,6 +82,10 @@ class TaskController extends Controller
      */
     public function destroy(Task $task)
     {
-        //
+        $task->delete();
+
+        return redirect()
+            ->route('tasks.index')
+            ->with('success', 'Tâche supprimée.');
     }
 }

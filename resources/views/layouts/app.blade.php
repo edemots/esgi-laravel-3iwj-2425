@@ -15,7 +15,7 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100 dark:bg-gray-900">
+        <div class="relative min-h-screen bg-gray-100 dark:bg-gray-900">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
@@ -31,6 +31,12 @@
             <main>
                 {{ $slot }}
             </main>
+
+            @session('success')
+                <div class="absolute top-16 right-16 rounded-xl px-4 py-2 bg-green-100 border border-green-200 shadow-xl">
+                    <p class="font-semibold">{{ $value }}</p>
+                </div>
+            @endsession
         </div>
     </body>
 </html>
