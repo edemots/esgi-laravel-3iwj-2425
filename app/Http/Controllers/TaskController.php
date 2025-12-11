@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class TaskController extends Controller
 {
@@ -13,7 +14,8 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::query()
-            ->select(['id', 'title', 'created_at'])
+            ->with(['reporter', 'assignee'])
+            ->select(['id', 'title', 'created_at', 'reporter_id', 'assignee_id'])
             ->latest()
             ->get();
 
@@ -38,6 +40,8 @@ class TaskController extends Controller
         ]);
 
         $task = new Task($validated);
+        // $task->reporter_id = Auth::id();
+        $task->reporter_id = $request->user()->id;
         $task->save();
 
         return redirect()
@@ -67,7 +71,8 @@ class TaskController extends Controller
     public function update(Request $request, Task $task)
     {
         $validated = $request->validate([
-            'title' => ['min:2', 'max:100'],
+            'title' => ['nullable', 'min:2', 'max:100'],
+            'assignee_id' => ['nullable', 'exists:users,id']
         ]);
 
         $task->update($validated);

@@ -8,9 +8,20 @@ class Task extends Model
 {
     protected $fillable = [
         'title',
+        'assignee_id'
     ];
 
     protected $casts = [
         'created_at' => 'datetime',
     ];
+
+    public function reporter()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function assignee()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

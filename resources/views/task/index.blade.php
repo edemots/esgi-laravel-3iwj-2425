@@ -9,7 +9,7 @@
         <section class="max-w-xl mx-auto sm:px-6 lg:px-8 space-y-4">
             @forelse ($tasks as $task)
                 <article class="bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg">
-                    <div class="flex gap-8 items-start justify-between">
+                    <div class="relative flex gap-8 items-start justify-between">
                         <div class="p-6 text-gray-900 dark:text-gray-100">
                             <div class="flex gap-2 items-baseline">
                                 <p class="text-gray-500 text-xl">#{{ $task->id }}</p>
@@ -19,6 +19,35 @@
                                 le
                                 <time datetime="{{ $task->created_at->toISOString() }}">{{ $task->created_at->isoFormat('LLLL') }}</time>
                             </p>
+                            <p class="text-sm text-gray-500 mt-2">par {{ $task->reporter->name }}</p>
+                        </div>
+
+                        <div class="absolute bottom-3 right-3">
+                            @if ($task->assignee_id == null)
+                                <form action="{{ route('tasks.update', $task) }}" method="POST">
+                                    @method('PATCH')
+                                    @csrf
+                                    <input type="hidden" name="assignee_id" value="{{ auth()->id() }}">
+
+                                    <button class="size-8 rounded-full bg-gray-200">
+                                        &nbsp;
+                                    </button>
+                                </form>
+                            @else
+                                <form action="{{ route('tasks.update', $task) }}" method="POST">
+                                    @method('PATCH')
+                                    @csrf
+                                    @if ($task->assignee_id === auth()->id())
+                                        <input type="hidden" name="assignee_id" value="">
+                                    @else
+                                        <input type="hidden" name="assignee_id" value="{{ auth()->id() }}">
+                                    @endif
+
+                                    <button class="size-8 rounded-full bg-gray-200">
+                                        {{ Str::of($task->assignee->name)->split('/\s+/')->reduce(fn ($initials, $str) => $initials.$str[0], '') }}
+                                    </button>
+                                </form>
+                            @endif
                         </div>
 
                         <x-dropdown>
