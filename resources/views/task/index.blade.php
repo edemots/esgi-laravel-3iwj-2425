@@ -20,6 +20,13 @@
                                 <time datetime="{{ $task->created_at->toISOString() }}">{{ $task->created_at->isoFormat('LLLL') }}</time>
                             </p>
                             <p class="text-sm text-gray-500 mt-2">par {{ $task->reporter->name }}</p>
+                            <div class="mt-2 flex gap-2 items-center flex-wrap">
+                                @foreach ($task->labels as $label)
+                                    <div style="--bg-color: {{ $label->color }}" class="px-2 py-1 bg-[--bg-color] rounded-full border border-[--bg-color]">
+                                        <span class="text-xs text-white mix-blend-difference">{{ $label->name }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
                         </div>
 
                         <div class="absolute bottom-3 right-3">

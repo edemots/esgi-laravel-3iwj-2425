@@ -21,6 +21,17 @@
                             <x-input-error :messages="$errors->get('title')" class="mt-2" />
                         </div>
 
+                        <div>
+                            <x-input-label for="labels" :value="__('Labels')" />
+                            @foreach ($labels as $label)
+                                <div class="flex items-center gap-2">
+                                    <input id="checkbox-{{ $label->id }}" type="checkbox" name="labels[]" value="{{ $label->id }}" @checked($task->labels->contains($label)) />
+                                    <x-input-label for="checkbox-{{ $label->id }}" :value="$label->name" />
+                                </div>
+                            @endforeach
+                            <x-input-error :messages="$errors->get('labels')" class="mt-2" />
+                        </div>
+
                         <x-primary-button>
                             {{ __('Edit') }}
                         </x-primary-button>

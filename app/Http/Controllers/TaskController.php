@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Label;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -14,7 +15,7 @@ class TaskController extends Controller
     public function index()
     {
         $tasks = Task::query()
-            ->with(['reporter', 'assignee'])
+            ->with(['reporter', 'assignee', 'labels'])
             ->select(['id', 'title', 'created_at', 'reporter_id', 'assignee_id'])
             ->latest()
             ->get();
@@ -62,7 +63,10 @@ class TaskController extends Controller
      */
     public function edit(Task $task)
     {
-        return view('task.edit', compact('task'));
+        $task->load(['labels']);
+        $labels = Label::query()->select(['id', 'name'])->get();
+
+        return view('task.edit', compact('task', 'labels'));
     }
 
     /**
@@ -72,10 +76,12 @@ class TaskController extends Controller
     {
         $validated = $request->validate([
             'title' => ['nullable', 'min:2', 'max:100'],
-            'assignee_id' => ['nullable', 'exists:users,id']
+            'assignee_id' => ['nullable', 'exists:users,id'],
+            'labels.*' => ['exists:labels,id'],
         ]);
 
         $task->update($validated);
+        $task->labels()->sync($validated['labels']);
 
         return redirect()
             ->route('tasks.index')
